@@ -2,6 +2,7 @@
 // Project: http://dev.splunk.com
 // Definitions by: Markus Denkinger <https://github.com/mdenkinger>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// TypeScript Version: 2.4
 
 /*~ Note that ES6 modules cannot directly export class objects.
  *~ This file should be imported using the CommonJS-style:
@@ -24,7 +25,7 @@ export = Service;
 
 /*~ Write your module's methods and properties in this class */
 
-declare interface Config {
+interface Config {
     // - `scheme` (_string_): The scheme ("http" or "https") for accessing Splunk.
     scheme?: string;
     // - `host` (_string_): The host name (the default is "localhost").
@@ -54,7 +55,7 @@ declare enum Sharing {
     SYSTEM = "system"
 }
 
-declare interface Namespace {
+interface Namespace {
     owner?: string;
     app?: string;
     sharing?: Sharing;
@@ -74,24 +75,28 @@ declare class Http {
     /**
      * Performs a GET request.
      *
-     * @param {String} url The URL of the GET request.
-     * @param {Object} headers An object of headers for this request.
-     * @param {Object} params Parameters for this request.
-     * @param {Number} timeout A timeout period.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
-     *
-     * @method splunkjs.Http
+     * @param url The URL of the GET request.
+     * @param headers An object of headers for this request.
+     * @param params Parameters for this request.
+     * @param timeout A timeout period.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      */
-    //get: function(url, headers, params, timeout, callback)
+    get(
+        url: string,
+        headers: any, // TODO: check type
+        params: any, // TODO: check type
+        timeout: number,
+        callback: (err: Error, wasSuccessful: boolean) => void
+    ): void;
 
     /**
      * Performs a POST request.
      *
-     * @param {String} url The URL of the POST request.
-     * @param {Object} headers  An object of headers for this request.
-     * @param {Object} params Parameters for this request.
+     * @param url The URL of the POST request.
+     * @param headers  An object of headers for this request.
+     * @param params Parameters for this request.
      * @param {Number} timeout A timeout period.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      *
      * @method splunkjs.Http
      */
@@ -100,11 +105,11 @@ declare class Http {
     /**
      * Performs a DELETE request.
      *
-     * @param {String} url The URL of the DELETE request.
-     * @param {Object} headers An object of headers for this request.
-     * @param {Object} params Query parameters for this request.
+     * @param url The URL of the DELETE request.
+     * @param headers An object of headers for this request.
+     * @param params Query parameters for this request.
      * @param {Number} timeout A timeout period.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      *
      * @method splunkjs.Http
      */
@@ -116,9 +121,9 @@ declare class Http {
      * This function sets up how to handle a response from a request, but
      * delegates calling the request to the `makeRequest` subclass.
      *
-     * @param {String} url The encoded URL of the request.
-     * @param {Object} message An object with values for method, headers, timeout, and encoded body.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
+     * @param url The encoded URL of the request.
+     * @param message An object with values for method, headers, timeout, and encoded body.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      *
      * @method splunkjs.Http
      * @see makeRequest
@@ -133,10 +138,8 @@ declare class Http {
      *      // should be a=1&b=2&b=3&b=4
      *      encode({a: 1, b: [2,3,4]})
      *
-     * @param {Object} params The parameters to URL encode.
-     * @return {String} The URL-encoded string.
-     *
-     * @function splunkjs.Http
+     * @param params The parameters to URL encode.
+     * @return The URL-encoded string.
      */
     // Http.encode = function(params)
 }
@@ -146,22 +149,17 @@ declare class Context {
      * Converts a partial path to a fully-qualified path to a REST endpoint,
      * and if necessary includes the namespace owner and app.
      *
-     * @param {String} path The partial path.
-     * @param {String} namespace The namespace, in the format "_owner_/_app_".
-     * @return {String} The fully-qualified path.
-     *
-     * @method splunkjs.Context
+     * @param path The partial path.
+     * @param namespace The namespace, in the format "_owner_/_app_".
+     * @return The fully-qualified path.
      */
     fullpath(path: string, namespace: Namespace): string;
 
     /**
      * Converts a partial path to a fully-qualified URL.
      *
-     * @param {String} path The partial path.
-     * @return {String} The fully-qualified URL.
-     *
-     * @method splunkjs.Context
-     * @private
+     * @param path The partial path.
+     * @return The fully-qualified URL.
      */
     urlify(path: string): string;
 
@@ -169,9 +167,7 @@ declare class Context {
      * Authenticates and logs in to a Splunk instance, then stores the
      * resulting session key.
      *
-     * @param {Function} callback The function to call when login has finished: `(err, wasSuccessful)`.
-     *
-     * @method splunkjs.Context
+     * @param callback The function to call when login has finished: `(err, wasSuccessful)`.
      */
     login(callback: (err: Error, wasSuccessful: boolean) => void): void;
 
@@ -179,20 +175,16 @@ declare class Context {
      * Logs the session out resulting in the removal of all cookies and the
      * session key.
      *
-     * @param {Function} callback The function to call when logout has finished: `()`.
-     *
-     * @method splunkjs.Context
+     * @param callback The function to call when logout has finished: `()`.
      */
     logout(callback: () => void): void;
 
     /**
      * Performs a GET request.
      *
-     * @param {String} path The REST endpoint path of the GET request.
-     * @param {Object} params The entity-specific parameters for this request.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
-     *
-     * @method splunkjs.Context
+     * @param path The REST endpoint path of the GET request.
+     * @param params The entity-specific parameters for this request.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      */
     get(
         path: string,
@@ -203,11 +195,9 @@ declare class Context {
     /**
      * Performs a DELETE request.
      *
-     * @param {String} path The REST endpoint path of the DELETE request.
-     * @param {Object} params The entity-specific parameters for this request.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
-     *
-     * @method splunkjs.Context
+     * @param path The REST endpoint path of the DELETE request.
+     * @param params The entity-specific parameters for this request.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      */
     del(
         path: string,
@@ -218,11 +208,9 @@ declare class Context {
     /**
      * Performs a POST request.
      *
-     * @param {String} path The REST endpoint path of the POST request.
-     * @param {Object} params The entity-specific parameters for this request.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
-     *
-     * @method splunkjs.Context
+     * @param path The REST endpoint path of the POST request.
+     * @param params The entity-specific parameters for this request.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      */
     post(
         path: string,
@@ -233,15 +221,13 @@ declare class Context {
     /**
      * Issues an arbitrary HTTP request to the REST endpoint path segment.
      *
-     * @param {String} path The REST endpoint path segment (with any query parameters already appended and encoded).
-     * @param {String} method The HTTP method (can be `GET`, `POST`, or `DELETE`).
-     * @param {Object} query The entity-specific parameters for this request.
-     * @param {Object} post A dictionary of POST argument that will get form encoded.
-     * @param {Object} body The body of the request, mutually exclusive with `post`.
-     * @param {Object} headers Headers for this request.
-     * @param {Function} callback The function to call when the request is complete: `(err, response)`.
-     *
-     * @method splunkjs.Context
+     * @param path The REST endpoint path segment (with any query parameters already appended and encoded).
+     * @param method The HTTP method (can be `GET`, `POST`, or `DELETE`).
+     * @param query The entity-specific parameters for this request.
+     * @param post A dictionary of POST argument that will get form encoded.
+     * @param body The body of the request, mutually exclusive with `post`.
+     * @param headers Headers for this request.
+     * @param callback The function to call when the request is complete: `(err, response)`.
      */
     request(
         path: string,
@@ -260,9 +246,7 @@ declare class Context {
      *          0 if (this.version == otherVersion),
      *          1 if (this.version >  otherVersion).
      *
-     * @param {String} otherVersion The other version string, for example "5.0".
-     *
-     * @method splunkjs.Context
+     * @param otherVersion The other version string, for example "5.0".
      */
     versionCompare(otherVersion: string): number;
 }
@@ -281,21 +265,20 @@ declare class Service extends BaseService {
      *      let svc = ...;
      *      let newService = svc.specialize("myuser", "unix");
      *
-     * @param {string} owner The Splunk username, such as "admin". A value of "nobody" means no specific user. The "-" wildcard means all users.
-     * @param {string} app The app context for this resource (such as "search"). The "-" wildcard means all apps.
-     * @return {splunkjs.Service} The specialized `Service` instance.
-     *
-     * @method splunkjs.Service
+     * @param owner The Splunk username, such as "admin". A value of "nobody" means no specific user. The "-" wildcard means all users.
+     * @param app The app context for this resource (such as "search"). The "-" wildcard means all apps.
+     * @return The specialized `Service` instance.
      */
     specialize(owner: string, app: string): Service;
 }
 
 /*~ If you want to expose types from your module as well, you can
  *~ place them in this block.
+ *~ TODO: cleanup
  */
-declare namespace MyClass {
-    export interface MyClassMethodOptions {
-        width?: number;
-        height?: number;
-    }
-}
+// declare namespace MyClass {
+//     export interface MyClassMethodOptions {
+//         width?: number;
+//         height?: number;
+//     }
+// }
